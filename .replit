@@ -1,0 +1,72 @@
+modules = ["nodejs-24", "python-3.11", "postgresql-16"]
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+integrations = ["resend:1.0.0"]
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[[ports]]
+localPort = 5173
+externalPort = 5173
+
+[[ports]]
+localPort = 5174
+externalPort = 3001
+
+[[ports]]
+localPort = 5175
+externalPort = 3000
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 8081
+externalPort = 80
+
+[[ports]]
+localPort = 8082
+externalPort = 3002
+
+[[ports]]
+localPort = 8083
+externalPort = 4200
+
+[[ports]]
+localPort = 23859
+externalPort = 5000
+
+[[ports]]
+localPort = 26001
+externalPort = 3003
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+PLATFORM_FEE_BPS = "500"
+REFUND_DELAY_SECONDS = "604800"
+BASE_CHAIN = "base"
+VITE_ONCHAINKIT_API_KEY = "a8aa6658-25eb-4e86-9294-15ce4e88a35b"
+VITE_WALLETCONNECT_PROJECT_ID = "142895937436d0e1b7cf73d8b596bfb2"
+LINKY_ESCROW_ADDRESS = "0x2D114d64797c8e26b14FB8cCAfD3d5546223be39"
+TREASURY_ADDRESS = "0x9606fd326eb6c8e13e00782c3fc7fba4ea7e59c7"
+USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"

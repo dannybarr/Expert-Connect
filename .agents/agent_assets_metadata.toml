@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "OC8-bDy1OgxMdAikdPK0T"
+uri = "file://artifacts/linky/public/og-home.png"
+type = "image"
+title = "Hero OG background"
+
+[[generated]]
+id = "G7gDRyF2n3ZLcJByc1qv1"
+uri = "file://artifacts/linky/public/og-expert.png"
+type = "image"
+title = "Expert OG preview"

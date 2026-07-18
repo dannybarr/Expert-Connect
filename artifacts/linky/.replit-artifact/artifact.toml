@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "LINKY"
+version = "1.0.0"
+id = "artifacts/linky"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 5173
+
+[services.env]
+PORT = "5173"
+BASE_PATH = "/"
+
+[services.development]
+run = "pnpm --filter @workspace/linky run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/linky", "run", "build" ]
+publicDir = "artifacts/linky/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

@@ -1,0 +1,92 @@
+/* ============================================================
+ * DBLABS — Design Tokens
+ * Drop this into your project and import it once at the root.
+ *   <link rel="stylesheet" href="tokens.css">
+ * or in CSS:
+ *   @import url("./tokens.css");
+ * ============================================================ */
+
+:root {
+  /* ---------- Foundation ---------- */
+  --db-bg:        #FAF4DC;   /* Cream — primary background */
+  --db-bg-alt:    #F2EAC9;   /* Cream darker — alt surface */
+  --db-ink:       #0E0E0E;   /* Near-black ink */
+  --db-ink-soft:  #2A2A2A;
+  --db-mute:      #6B6757;   /* Muted text on cream */
+  --db-line:      #0E0E0E;   /* Border color */
+
+  /* ---------- Accents ---------- */
+  --db-lime:    #C7F23E;   /* Loud Lime — studio primary */
+  --db-coral:   #E8675F;   /* Villain */
+  --db-honey:   #F2B829;   /* Debt */
+  --db-cobalt:  #2444FF;   /* Arena */
+  --db-forest:  #1F6B45;   /* Scout */
+  --db-cream:   #FAF4DC;
+
+  /* ---------- App primaries (house of brands) ---------- */
+  --app-villain: var(--db-coral);
+  --app-scout:   var(--db-forest);
+  --app-debt:    var(--db-honey);
+  --app-arena:   var(--db-cobalt);
+
+  /* ---------- Radius ---------- */
+  --r-xs:   6px;
+  --r-sm:   10px;
+  --r-md:   16px;
+  --r-lg:   24px;
+  --r-pill: 999px;
+
+  /* ---------- Border / Shadow ---------- */
+  --bw: 2.5px;
+  --shadow-hard: 5px 5px 0 var(--db-ink);
+  --shadow-soft: 3px 3px 0 var(--db-ink);
+  --shadow-press: 2px 2px 0 var(--db-ink);
+
+  /* ---------- Type ---------- */
+  --f-display: "Space Grotesk", "Archivo", system-ui, sans-serif;
+  --f-body:    "Inter", system-ui, sans-serif;
+  --f-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --fs-xs:   12px;
+  --fs-sm:   14px;
+  --fs-md:   16px;
+  --fs-lg:   20px;
+  --fs-xl:   28px;
+  --fs-2xl:  40px;
+  --fs-3xl:  56px;
+  --fs-4xl:  76px;
+
+  --lh-tight: 1.05;
+  --lh-snug:  1.2;
+  --lh-body:  1.5;
+
+  --ls-tight: -0.02em;
+  --ls-mono:  0.08em;
+
+  /* ---------- Spacing (4-pt scale) ---------- */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  24px;
+  --s-6:  32px;
+  --s-7:  48px;
+  --s-8:  64px;
+  --s-9:  96px;
+
+  /* ---------- Motion ---------- */
+  --t-fast:   120ms;
+  --t-med:    220ms;
+  --t-slow:   400ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+
+/* ---------- Dark theme override ---------- */
+[data-theme="dark"] {
+  --db-bg:       #0E0E0E;
+  --db-bg-alt:   #1A1A1A;
+  --db-ink:      #FAF4DC;
+  --db-ink-soft: #E2DCC4;
+  --db-mute:     #8E8A78;
+  --db-line:     #FAF4DC;
+}

@@ -1,0 +1,734 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: LINKY API — Pay-to-Speak on Base
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Wallet sign-in (session bearer tokens)
+  - name: experts
+    description: Expert profile operations
+  - name: bookings
+    description: Booking lifecycle and on-chain escrow receipts
+  - name: stats
+    description: Aggregate platform stats
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /config:
+    get:
+      operationId: getConfig
+      tags: [health]
+      summary: Public chain & platform config
+      description: Returns the chain ID, USDC contract, escrow contract, treasury, fee, and refund delay for the frontend.
+      responses:
+        "200":
+          description: Config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformConfig"
+
+  /auth/nonce:
+    post:
+      operationId: requestLoginNonce
+      tags: [auth]
+      summary: Request a one-time login nonce for a wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NonceInput"
+      responses:
+        "200":
+          description: Nonce issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NonceResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Exchange a signed nonce for a session bearer token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Invalid signature
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /experts:
+    get:
+      operationId: listExperts
+      tags: [experts]
+      summary: List recent experts
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 50, default: 12 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expert"
+    post:
+      operationId: createExpert
+      tags: [experts]
+      summary: Create or claim an expert profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpertInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expert"
+        "409":
+          description: Handle or wallet already taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /experts/{handle}:
+    get:
+      operationId: getExpert
+      tags: [experts]
+      summary: Public expert profile
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expert"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /experts/by-wallet/{wallet}:
+    get:
+      operationId: getExpertByWallet
+      tags: [experts]
+      summary: Lookup the expert profile owned by a wallet
+      parameters:
+        - in: path
+          name: wallet
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expert"
+        "404":
+          description: No profile for this wallet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /experts/{handle}/stats:
+    get:
+      operationId: getExpertStats
+      tags: [stats]
+      summary: Headline metrics for an expert profile
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpertStats"
+
+  /experts/{handle}/reveal/{channel}:
+    get:
+      operationId: revealExpertContact
+      tags: [experts]
+      summary: Reveal seller contact for a channel (buyer-only)
+      description: |
+        Returns the seller's contact for a given channel iff the calling
+        wallet has a confirmed paid booking for this expert + channel.
+        Otherwise 403.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          schema: { type: string }
+        - in: path
+          name: channel
+          required: true
+          schema:
+            $ref: "#/components/schemas/Channel"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RevealedContact"
+        "403":
+          description: Caller has not paid for this channel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bookings:
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Record a booking after a direct USDC transfer to the expert wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "200":
+          description: Already recorded (idempotent) — reveal returned again
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingWithReveal"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingWithReveal"
+        "402":
+          description: On-chain transaction did not contain a matching USDC transfer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get a booking (participant-only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}/complete:
+    post:
+      operationId: completeBooking
+      tags: [bookings]
+      summary: Expert finalizes a booking after calling escrow.release on-chain
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompleteBookingInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}/refund:
+    post:
+      operationId: refundBooking
+      tags: [bookings]
+      summary: Buyer reclaims escrow after the refund delay
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefundBookingInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/by-expert/{wallet}:
+    get:
+      operationId: listBookingsByExpert
+      tags: [bookings]
+      summary: All bookings belonging to a given expert wallet (owner-only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: wallet
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
+  /bookings/by-buyer/{wallet}:
+    get:
+      operationId: listBookingsByBuyer
+      tags: [bookings]
+      summary: All bookings a buyer wallet has made (owner-only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: wallet
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
+  /stats/platform:
+    get:
+      operationId: getPlatformStats
+      tags: [stats]
+      summary: Live platform-wide metrics
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: linky-session
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    PlatformConfig:
+      type: object
+      required:
+        - chainId
+        - chainName
+        - usdcAddress
+        - escrowAddress
+        - treasuryAddress
+        - platformFeeBps
+        - refundDelaySeconds
+        - explorerBaseUrl
+      properties:
+        chainId: { type: integer }
+        chainName: { type: string }
+        usdcAddress: { type: string }
+        escrowAddress:
+          type: ["string", "null"]
+          description: Deployed LinkyEscrow contract address; null until the operator has set LINKY_ESCROW_ADDRESS
+        treasuryAddress: { type: string }
+        platformFeeBps: { type: integer }
+        refundDelaySeconds:
+          type: integer
+          description: Seconds after booking before the buyer can refund
+        explorerBaseUrl: { type: string }
+
+    NonceInput:
+      type: object
+      required: [wallet]
+      properties:
+        wallet: { type: string }
+
+    NonceResponse:
+      type: object
+      required: [nonce, expiresAt]
+      properties:
+        nonce: { type: string }
+        expiresAt: { type: integer }
+
+    LoginInput:
+      type: object
+      required: [wallet, signature, timestamp, nonce]
+      properties:
+        wallet: { type: string }
+        signature: { type: string }
+        timestamp: { type: integer }
+        nonce: { type: string }
+
+    LoginResponse:
+      type: object
+      required: [token, expiresAt, wallet]
+      properties:
+        token: { type: string }
+        expiresAt: { type: integer }
+        wallet: { type: string }
+
+    Channel:
+      type: string
+      enum: [messaging, calls]
+
+    MessagingPlatform:
+      type: string
+      enum: [whatsapp, telegram]
+
+    MessagingChannel:
+      type: object
+      description: Public-safe view of a seller's messaging channel — no raw handle.
+      required: [enabled, platform, priceUsdc]
+      properties:
+        enabled: { type: boolean }
+        platform:
+          $ref: "#/components/schemas/MessagingPlatform"
+        priceUsdc:
+          type: string
+          description: USDC amount as a decimal string
+
+    CallsChannel:
+      type: object
+      description: Public-safe view of a seller's calls channel — no raw booking URL.
+      required: [enabled, priceUsdc]
+      properties:
+        enabled: { type: boolean }
+        priceUsdc:
+          type: string
+          description: USDC amount as a decimal string
+
+    MessagingChannelInput:
+      type: object
+      required: [enabled]
+      properties:
+        enabled: { type: boolean }
+        platform:
+          $ref: "#/components/schemas/MessagingPlatform"
+        handle:
+          type: string
+          description: WhatsApp phone number (E.164) or Telegram username
+        priceUsdc: { type: string }
+
+    CallsChannelInput:
+      type: object
+      required: [enabled]
+      properties:
+        enabled: { type: boolean }
+        bookingUrl: { type: string }
+        priceUsdc: { type: string }
+
+    Expert:
+      type: object
+      description: Public expert profile — never includes raw contact details for paid channels.
+      required:
+        - id
+        - handle
+        - wallet
+        - name
+        - about
+        - createdAt
+      properties:
+        id: { type: string }
+        handle: { type: string }
+        wallet: { type: string }
+        name: { type: string }
+        about:
+          type: string
+          description: Profession / one-liner shown publicly
+        linkedinUrl:
+          type: ["string", "null"]
+        xUrl:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        messaging:
+          oneOf:
+            - $ref: "#/components/schemas/MessagingChannel"
+            - type: "null"
+        calls:
+          oneOf:
+            - $ref: "#/components/schemas/CallsChannel"
+            - type: "null"
+        createdAt: { type: string }
+
+    ExpertInput:
+      type: object
+      required:
+        - handle
+        - wallet
+        - signature
+        - timestamp
+        - name
+        - about
+      properties:
+        handle:
+          type: string
+          minLength: 2
+          maxLength: 32
+          pattern: "^[a-z0-9-]+$"
+        wallet: { type: string }
+        signature: { type: string }
+        timestamp: { type: integer }
+        name: { type: string, minLength: 1 }
+        about: { type: string, minLength: 1 }
+        linkedinUrl:
+          type: ["string", "null"]
+        xUrl:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        messaging:
+          oneOf:
+            - $ref: "#/components/schemas/MessagingChannelInput"
+            - type: "null"
+        calls:
+          oneOf:
+            - $ref: "#/components/schemas/CallsChannelInput"
+            - type: "null"
+
+    ExpertStats:
+      type: object
+      required: [handle, totalEarnedUsdc, totalBookings, completedBookings, messagingBookings, callsBookings]
+      properties:
+        handle: { type: string }
+        totalEarnedUsdc: { type: string }
+        totalBookings: { type: integer }
+        completedBookings: { type: integer }
+        messagingBookings: { type: integer }
+        callsBookings: { type: integer }
+
+    RevealedContact:
+      type: object
+      required: [channel]
+      properties:
+        channel:
+          $ref: "#/components/schemas/Channel"
+        platform:
+          oneOf:
+            - $ref: "#/components/schemas/MessagingPlatform"
+            - type: "null"
+        handle:
+          type: ["string", "null"]
+          description: WhatsApp number or Telegram username (only present for messaging)
+        bookingUrl:
+          type: ["string", "null"]
+          description: Calendar booking URL (only present for calls)
+
+    BookingStatus:
+      type: string
+      enum: [paid, completed, refunded]
+
+    BookingSource:
+      type: string
+      description: Where the booking originated.
+      enum: [web, agent]
+
+    Booking:
+      type: object
+      required:
+        - id
+        - expertHandle
+        - expertWallet
+        - buyerWallet
+        - amountUsdc
+        - feeUsdc
+        - escrowBookingId
+        - bookTxHash
+        - status
+        - channel
+        - createdAt
+      properties:
+        id: { type: string }
+        expertHandle: { type: string }
+        expertWallet: { type: string }
+        buyerWallet: { type: string }
+        buyerEmail:
+          type: ["string", "null"]
+        amountUsdc: { type: string }
+        feeUsdc: { type: string }
+        escrowBookingId: { type: string }
+        bookTxHash: { type: string }
+        releaseTxHash:
+          type: ["string", "null"]
+        refundTxHash:
+          type: ["string", "null"]
+        status:
+          $ref: "#/components/schemas/BookingStatus"
+        channel:
+          $ref: "#/components/schemas/Channel"
+        source:
+          oneOf:
+            - $ref: "#/components/schemas/BookingSource"
+            - type: "null"
+          description: "'agent' for bookings created via the Agent API, 'web' (or null) for human bookings."
+        createdAt: { type: string }
+        completedAt:
+          type: ["string", "null"]
+        releasedAt:
+          type: ["string", "null"]
+        refundedAt:
+          type: ["string", "null"]
+
+    BookingInput:
+      type: object
+      required: [expertHandle, channel, escrowBookingId, bookTxHash, email]
+      properties:
+        expertHandle: { type: string }
+        channel:
+          $ref: "#/components/schemas/Channel"
+        escrowBookingId:
+          type: string
+          pattern: "^0x[0-9a-fA-F]{64}$"
+        bookTxHash:
+          type: string
+          pattern: "^0x[0-9a-fA-F]{64}$"
+        email:
+          type: string
+          format: email
+          description: Buyer email; the unlocked contact is delivered here.
+
+    BookingWithReveal:
+      description: A booking plus the revealed contact, returned right after payment.
+      allOf:
+        - $ref: "#/components/schemas/Booking"
+        - type: object
+          properties:
+            reveal:
+              oneOf:
+                - $ref: "#/components/schemas/RevealedContact"
+                - type: "null"
+            emailSent:
+              type: boolean
+              description: Whether the contact email was dispatched successfully.
+
+    CompleteBookingInput:
+      type: object
+      required: [releaseTxHash]
+      properties:
+        releaseTxHash:
+          type: string
+          pattern: "^0x[0-9a-fA-F]{64}$"
+
+    RefundBookingInput:
+      type: object
+      required: [refundTxHash]
+      properties:
+        refundTxHash:
+          type: string
+          pattern: "^0x[0-9a-fA-F]{64}$"
+
+    PlatformStats:
+      type: object
+      required: [totalVolumeUsdc, totalBookings, totalExperts, totalLinks]
+      properties:
+        totalVolumeUsdc: { type: string }
+        totalBookings:
+          type: integer
+          description: Knowledge Transmitted — count of paid+completed bookings only.
+        totalExperts: { type: integer }
+        totalLinks:
+          type: integer
+          description: Links Generated — sum of messaging_enabled and calls_enabled channels across all experts.

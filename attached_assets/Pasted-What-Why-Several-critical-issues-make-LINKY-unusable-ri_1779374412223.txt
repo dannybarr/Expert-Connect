@@ -1,0 +1,25 @@
+What & Why
+Several critical issues make LINKY unusable right now. The expert profile page (the core payment screen) has a JSX syntax error and crashes. The SELL and BUY nav buttons 404 because they link to /sell and /buy which don't exist (the real routes are /new and /:handle). The smart contract address and treasury wallet are not configured as environment variables, so payments are disabled on both dev and production. The app defaults to Base Sepolia (testnet) rather than Base Mainnet. Until these are fixed, no transaction can complete end-to-end.
+
+Done looks like
+Visiting any expert's profile page (e.g. /ava-protocol) loads the payment UI without errors
+Clicking SELL in the nav opens the expert signup flow (currently at /new)
+Clicking BUY in the nav routes to the expert browse/directory page (currently / with the expert list)
+The /api/config endpoint returns a valid escrowAddress, a real treasuryAddress, and chainId: 8453 (Base Mainnet)
+A buyer with a connected wallet on Base can tap "Pay" on an expert profile and see the OnchainKit transaction sheet
+The LINKY_ESCROW_ADDRESS, TREASURY_ADDRESS, and BASE_CHAIN=mainnet environment variables are set and documented in .env.example
+Out of scope
+Deploying the actual smart contract (that requires a separate deploy step by the owner)
+Expert notification emails (separate task)
+Adding seed/demo experts to the database
+Steps
+Fix the JSX syntax error in expert-profile.tsx — The file has adjacent JSX elements without a wrapping fragment at line 391. Wrap the affected section in a <>…</> fragment to resolve the compile error.
+Fix the SELL and BUY nav links — In the nav component, update SELL to link to /new and BUY to route to / (the homepage which already lists experts). These are the correct existing routes for each action.
+Wire up environment variables for contract config — Add LINKY_ESCROW_ADDRESS, TREASURY_ADDRESS, and BASE_CHAIN to the api-server's environment variable setup. Update .env.example with placeholder values and clear comments. Ensure the /api/config response validates these are set and logs a warning on startup if they are missing.
+Switch default chain to Base Mainnet — Change the default value of BASE_CHAIN in the api-server config from Sepolia to mainnet (8453), so a missing env var doesn't silently route to testnet in production.
+Relevant files
+artifacts/linky/src/pages/expert-profile.tsx
+artifacts/linky/src/App.tsx
+artifacts/api-server/src/lib/auth.ts
+artifacts/api-server/src/routes/config.ts
+artifacts/api-server/src/index.ts

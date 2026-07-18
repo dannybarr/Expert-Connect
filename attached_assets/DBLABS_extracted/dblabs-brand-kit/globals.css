@@ -1,0 +1,127 @@
+/* ============================================================
+ * DBLABS — Global Styles
+ * Requires tokens.css to be loaded first.
+ *
+ * Recommended base font stack via Google Fonts:
+ *   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+ * ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--db-bg);
+  color: var(--db-ink);
+  font-family: var(--f-body);
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--db-lime); color: var(--db-ink); }
+
+/* ---------- Type ---------- */
+h1, h2, h3, h4 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  margin: 0;
+}
+h1 { font-size: clamp(40px, 7vw, var(--fs-4xl)); }
+h2 { font-size: clamp(32px, 5vw, var(--fs-3xl)); }
+h3 { font-size: var(--fs-2xl); }
+h4 { font-size: var(--fs-xl); }
+
+.mono, .eyebrow {
+  font-family: var(--f-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--db-mute);
+}
+
+/* ---------- Button ---------- */
+.db-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  appearance: none; cursor: pointer;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  letter-spacing: -0.01em;
+  border: var(--bw) solid var(--db-line);
+  background: var(--db-lime);
+  color: var(--db-ink);
+  padding: 14px 22px;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-hard);
+  transition: transform var(--t-fast) var(--ease-out),
+              box-shadow var(--t-fast) var(--ease-out);
+}
+.db-btn:hover  { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--db-ink); }
+.db-btn:active { transform: translate(2px, 2px);   box-shadow: var(--shadow-press); }
+.db-btn:focus-visible { outline: 3px solid var(--db-cobalt); outline-offset: 2px; }
+
+.db-btn.ink   { background: var(--db-ink);   color: var(--db-bg); }
+.db-btn.coral { background: var(--db-coral); color: var(--db-ink); }
+.db-btn.honey { background: var(--db-honey); color: var(--db-ink); }
+.db-btn.ghost { background: transparent; }
+.db-btn.pill  { border-radius: var(--r-pill); }
+.db-btn.sm    { padding: 8px 14px; font-size: var(--fs-sm); border-radius: var(--r-sm); }
+
+/* ---------- Input ---------- */
+.db-input {
+  width: 100%;
+  font-family: var(--f-body);
+  font-size: var(--fs-md);
+  padding: 14px 18px;
+  background: var(--db-bg);
+  color: var(--db-ink);
+  border: var(--bw) solid var(--db-line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-soft);
+  outline: none;
+  transition: box-shadow var(--t-fast) var(--ease-out);
+}
+.db-input::placeholder { color: var(--db-mute); }
+.db-input:focus { box-shadow: 5px 5px 0 var(--db-lime), 5px 5px 0 2.5px var(--db-ink); }
+
+/* ---------- Card ---------- */
+.db-card {
+  background: var(--db-bg);
+  border: var(--bw) solid var(--db-line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-hard);
+  padding: var(--s-5);
+}
+
+/* ---------- Pill / Chip ---------- */
+.db-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: var(--db-bg);
+  color: var(--db-ink);
+  border: var(--bw) solid var(--db-line);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-soft);
+  font-family: var(--f-display); font-weight: 700;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.db-pill.lime  { background: var(--db-lime); }
+.db-pill.coral { background: var(--db-coral); }
+.db-pill.honey { background: var(--db-honey); }
+.db-pill.ink   { background: var(--db-ink); color: var(--db-bg); }
+
+/* ---------- Image placeholder ---------- */
+.db-placeholder {
+  background-image: repeating-linear-gradient(-45deg, transparent 0 8px, rgba(14,14,14,0.08) 8px 9px);
+  background-color: var(--db-bg-alt);
+  color: var(--db-mute);
+  border: var(--bw) solid var(--db-line);
+  border-radius: var(--r-md);
+  display: grid; place-items: center;
+  font-family: var(--f-mono); font-size: var(--fs-xs);
+  letter-spacing: var(--ls-mono); text-transform: uppercase;
+}

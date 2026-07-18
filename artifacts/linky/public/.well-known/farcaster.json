@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "LINKY",
+    "iconUrl": "https://YOUR_DEPLOYED_DOMAIN/favicon.svg",
+    "homeUrl": "https://YOUR_DEPLOYED_DOMAIN/",
+    "imageUrl": "https://YOUR_DEPLOYED_DOMAIN/og-home.png",
+    "buttonTitle": "Pay to Speak",
+    "splashImageUrl": "https://YOUR_DEPLOYED_DOMAIN/og-home.png",
+    "splashBackgroundColor": "#F5F0E8",
+    "webhookUrl": "https://YOUR_DEPLOYED_DOMAIN/api/webhook/miniapp"
+  }
+}

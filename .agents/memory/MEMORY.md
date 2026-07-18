@@ -1,0 +1,2 @@
+- [Composite project ref staleness](composite-project-refs.md) — typecheck fails with "property does not exist" while dev server runs fine → dist .d.ts files in referenced lib are stale; rebuild with `tsc -b --force`.
+- [OpenAPI codegen drift](openapi-codegen-drift.md) — after schema/route changes always re-run `pnpm --filter @workspace/api-spec run codegen`; frontend type errors against `Expert`/`PlatformStats` mean the generated client is behind the spec.
