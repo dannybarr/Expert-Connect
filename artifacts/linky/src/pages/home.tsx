@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "wouter";
 import { useGetPlatformStats } from "@workspace/api-client-react";
-import { ArrowRight, Bot, Lock, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, Bot, Link2, Lock, ShieldCheck, SlidersHorizontal, Wallet, Zap } from "lucide-react";
 import { CountUp } from "@/components/count-up";
 import baseAppIcon from "../assets/base-app-icon.png";
 
@@ -204,6 +204,48 @@ export default function Home() {
       </section>
 
       <Ticker />
+
+      {/* For professionals */}
+      <section className="container max-w-6xl mx-auto px-4 pt-16 md:pt-20 pb-4">
+        <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-db-mute mb-3">
+          // For professionals
+        </div>
+        <div className="grid lg:grid-cols-[1fr_auto] gap-6 lg:gap-10 lg:items-end mb-10">
+          <div>
+            <h2 className="font-display font-bold text-3xl md:text-4xl tracking-[-0.02em] leading-[1.05] max-w-2xl mb-4">
+              Your expertise, <span className="text-db-cobalt">finally an asset.</span>
+            </h2>
+            <p className="font-body text-lg text-db-ink/75 max-w-2xl leading-snug">
+              You spent years earning what you know, and until now it left the room for free. LINKY
+              turns it into something you own and price. One link, your rate, paid in USDC the moment a
+              person or their AI needs it.
+            </p>
+          </div>
+          <Link
+            href="/new"
+            className="inline-flex h-12 items-center justify-center gap-2 px-6 bg-db-cobalt border-[2.5px] border-db-ink rounded-[16px] font-display font-bold text-base shadow-[5px_5px_0_var(--db-ink)] hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_var(--db-ink)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_var(--db-ink)] transition-[transform,box-shadow] text-white shrink-0 self-start lg:self-auto"
+          >
+            Claim your handle <ArrowRight className="h-5 w-5" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <WhyCard
+            icon={Link2}
+            title="One link, any audience"
+            body="Put it in your bio, a post, an email signature. It works for a human reading it and an agent calling it."
+          />
+          <WhyCard
+            icon={SlidersHorizontal}
+            title="You set the terms"
+            body="Your price, your channel, your schedule. Message or call, answered when it suits you."
+          />
+          <WhyCard
+            icon={Wallet}
+            title="Paid instantly, no chasing"
+            body="USDC lands in your wallet the moment they pay. No invoices, no platform sitting between you and your reputation."
+          />
+        </div>
+      </section>
 
       {/* Why agents pay humans */}
       <section className="container max-w-6xl mx-auto px-4 py-16 md:py-20">
