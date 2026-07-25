@@ -127,10 +127,18 @@ export default function BookingPage() {
   const isExpert = address.toLowerCase() === booking.expertWallet.toLowerCase();
 
   const escrowReady = !!config?.escrowAddress;
+  // Only escrow-backed (agent) bookings can be released/refunded on-chain. Web
+  // bookings are instant, final, direct-transfer payments — there is no escrow
+  // to release or refund, so those controls must never show for them.
+  const isEscrowBooking = booking.source === "agent";
   const refundEligibleAt = new Date(
     new Date(booking.createdAt).getTime() + (config?.refundDelaySeconds ?? 0) * 1000,
   );
-  const canRefund = isBuyer && booking.status === "paid" && Date.now() >= refundEligibleAt.getTime();
+  const canRefund =
+    isBuyer &&
+    isEscrowBooking &&
+    booking.status === "paid" &&
+    Date.now() >= refundEligibleAt.getTime();
 
   const releaseCalls =
     escrowReady && config
@@ -199,7 +207,7 @@ export default function BookingPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {isExpert && booking.status === "paid" && escrowReady && (
+          {isExpert && booking.status === "paid" && escrowReady && isEscrowBooking && (
             <Transaction
               chainId={config!.chainId}
               calls={releaseCalls}
@@ -227,7 +235,7 @@ export default function BookingPage() {
               <TransactionStatus><TransactionStatusLabel /><TransactionStatusAction /></TransactionStatus>
             </Transaction>
           )}
-          {isBuyer && booking.status === "paid" && !canRefund && (
+          {isBuyer && isEscrowBooking && booking.status === "paid" && !canRefund && (
             <div className="font-mono text-[11px] uppercase tracking-[0.08em] text-db-mute">
               Refund unlocks {refundEligibleAt.toLocaleString()}
             </div>
@@ -311,7 +319,11 @@ export default function BookingPage() {
             <div className="font-mono text-[11px] uppercase tracking-[0.08em] text-db-mute mb-2">// You're the seller</div>
             <p className="text-db-ink">
               Your buyer unlocked your {channel === "messaging" ? "messaging handle" : "booking link"}.
-              When you've delivered, hit <strong>Release escrow</strong> to take payment.
+              {isEscrowBooking ? (
+                <> When you've delivered, hit <strong>Release escrow</strong> to take payment.</>
+              ) : (
+                <> Payment already landed in your wallet, just deliver.</>
+              )}
             </p>
           </div>
         )}

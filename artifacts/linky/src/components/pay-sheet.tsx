@@ -351,7 +351,9 @@ export function PaySheet({
                   </div>
                 </div>
                 <div className="mt-3 pt-3 border-t border-db-ink/15 flex items-center justify-center text-[11px] font-mono uppercase tracking-[0.04em] text-db-mute text-center">
-                  Paid straight to {expertName.split(" ")[0]} · no fees
+                  {config
+                    ? `$${fmtUsdc(Number(priceUsdc) * (1 - config.platformFeeBps / 10000))} to ${expertName.split(" ")[0]} · $${fmtUsdc((Number(priceUsdc) * config.platformFeeBps) / 10000)} platform fee`
+                    : `Paid to ${expertName.split(" ")[0]} on Base`}
                 </div>
               </div>
 

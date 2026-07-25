@@ -1,6 +1,10 @@
 # LINKY
 
-A Base Mini App where any expert publishes a shareable profile link; buyers pay USDC on Base into an escrow contract to unlock a private chat and/or a booking link. 95/5 split to expert/treasury on release, 7-day buyer refund window.
+A Base Mini App where any expert publishes a shareable profile link; buyers pay USDC on Base to unlock a private chat and/or a booking link, with a 95/5 split to expert/treasury.
+
+Two payment models share the `bookings` table, distinguished by `source`:
+- **Web (`source: "web"`)** — the live human checkout. A single batched USDC transfer splits the payment directly to expert + treasury. Instant and final: no escrow, no on-chain release/refund step. The frontend must not show release/refund controls for these bookings.
+- **Agent (`source: "agent"`)** — programmatic buyers via `/v1/ask`. These route through the `LinkyEscrow` contract (book → release/refund), tracked on-chain, with the 7-day refund window.
 
 ## Run & Operate
 

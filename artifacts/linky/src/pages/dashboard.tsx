@@ -292,7 +292,7 @@ export default function Dashboard() {
                         <MessageSquare className="h-4 w-4" /> Open
                       </Button>
                     </Link>
-                    {booking.status === "paid" && escrowReady && (
+                    {booking.status === "paid" && escrowReady && booking.source === "agent" && (
                       <Transaction
                         chainId={config!.chainId}
                         calls={releaseCalls}
