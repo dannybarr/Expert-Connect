@@ -336,13 +336,13 @@ const SELL_STEPS: Step[] = [
   {
     number: 3,
     headline: "Receive booking requests",
-    description: "Buyers pay USDC into escrow before they can reach you. You see a funded request and reply on your own schedule.",
+    description: "Buyers pay your USDC price up front to unlock your contact. The payment lands in your wallet instantly, and you reply on your own schedule.",
     mock: <MockBookingRequest />,
   },
   {
     number: 4,
     headline: "Get paid in USDC",
-    description: "Answer the question. USDC is released from escrow directly to your wallet, settled on Base. No invoices, no friction.",
+    description: "The USDC is already in your wallet, settled on Base the moment they paid. Just deliver. No invoices, no friction.",
     mock: <MockGetPaid />,
   },
 ];
@@ -357,7 +357,7 @@ const BUY_STEPS: Step[] = [
   {
     number: 2,
     headline: "Pick a channel and pay USDC",
-    description: "Choose how you want to reach them — message or call. Pay the USDC price into escrow. If they don't answer, you get a full refund.",
+    description: "Choose how you want to reach them, message or call. Pay the USDC price and their contact unlocks instantly. One payment, direct access.",
     mock: <MockPickChannel />,
   },
   {
