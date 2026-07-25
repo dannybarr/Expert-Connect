@@ -119,15 +119,15 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>LINKY — The human layer for AI agents</title>
+        <title>LINKY — Human in the loop</title>
         <meta
           name="description"
-          content="LINKY turns your expertise into an endpoint the agentic economy can pay. AI agents and the people running them pay you in USDC for the judgment they can't generate. Settled on Base."
+          content="Human in the loop, paid in USDC. When AI quality needs genuine human expertise, LINKY is the loop: experts get paid on Base for the judgment AI can't generate."
         />
-        <meta property="og:title" content="LINKY — The human layer for AI agents" />
+        <meta property="og:title" content="LINKY — Human in the loop" />
         <meta
           property="og:description"
-          content="Get paid when an AI needs a human. Publish one link, get paid in USDC, settled on Base."
+          content="Human in the loop. Paid in USDC. Experts get paid when AI needs genuine expertise. Settled on Base."
         />
         <meta property="og:image" content="/og-home.png" />
       </Helmet>
@@ -138,24 +138,24 @@ export default function Home() {
           <div className="flex flex-col items-start gap-6">
             <div className="flex items-center gap-2.5">
               <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-db-ink bg-db-bg-alt border-[2.5px] border-db-ink rounded-full px-3 py-1 shadow-[3px_3px_0_var(--db-ink)]">
-                ★ The human layer for AI agents
+                ★ Human in the loop
               </span>
               <img src={baseAppIcon} alt="Base" className="h-7 w-7 shrink-0" />
             </div>
 
             <h1 className="font-display font-bold tracking-[-0.02em] leading-[1.02] text-5xl sm:text-6xl md:text-7xl max-w-3xl">
-              Get paid when an AI<br />
-              needs a <span className="text-db-cobalt">human.</span>
+              Human in the loop.<br />
+              Paid in <span className="text-db-cobalt">USDC.</span>
             </h1>
 
             <p className="font-body text-lg md:text-xl text-db-ink/80 max-w-2xl leading-snug">
-              LINKY turns your expertise into an endpoint the agentic economy can pay. Publish one
-              link. AI agents, and the people running them, pay you in USDC for the judgment, context,
-              and verification they can't generate. Settled instantly on Base.
+              When AI quality needs genuine human expertise, LINKY is the loop. Experts articulate the
+              knowledge value they hold, AI calls on them, experts get paid. The AI agents that hit
+              their limits pay for the judgment they can't generate. Settled instantly on Base.
             </p>
 
             <div className="flex items-center gap-2 flex-wrap">
-              {["For agents", "For humans", "Instant USDC", "On Base"].map((t) => (
+              {["For experts", "For AI agents", "Instant USDC", "On Base"].map((t) => (
                 <span
                   key={t}
                   className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-db-ink bg-db-bg-alt border-[2.5px] border-db-ink rounded-full px-3 py-1 shadow-[2px_2px_0_var(--db-ink)]"
@@ -185,6 +185,13 @@ export default function Home() {
                   className="font-mono text-[12px] font-semibold uppercase tracking-[0.08em] text-db-ink/60 hover:text-db-cobalt underline-offset-4 hover:underline"
                 >
                   How it works →
+                </Link>
+                <span className="text-db-ink/30 hidden sm:inline">·</span>
+                <Link
+                  href="/docs/agents"
+                  className="font-mono text-[12px] font-semibold uppercase tracking-[0.08em] text-db-ink/60 hover:text-db-cobalt underline-offset-4 hover:underline"
+                >
+                  For agents & builders →
                 </Link>
               </div>
             </div>
